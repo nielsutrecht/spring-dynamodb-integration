@@ -4,7 +4,6 @@ import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.datamodeling.*;
 import com.amazonaws.services.dynamodbv2.model.*;
-import com.nibado.example.springtestcontainers.dto.Counter;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,9 +13,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Repository
 public class CounterRepository {
@@ -32,32 +29,23 @@ public class CounterRepository {
         this.mapper = new DynamoDBMapper(db);
     }
 
-    public List<Counter> findAll() {
+    public List<CounterEntity> findAll() {
         DynamoDBScanExpression scanExpression = new DynamoDBScanExpression();
-        return mapper.scanPage(CounterEntity.class, scanExpression).getResults()
-                .stream()
-                .map(CounterEntity::map)
-                .collect(Collectors.toList());
+        return mapper.scanPage(CounterEntity.class, scanExpression).getResults();
     }
 
     public void put(String counter, int value) {
         mapper.save(new CounterEntity(counter, value));
     }
 
-    public Optional<Counter> get(String counter) {
+    public Optional<CounterEntity> get(String counter) {
         var entity = mapper.load(CounterEntity.class, counter);
 
-        return Optional.ofNullable(entity).map(CounterEntity::map);
+        return Optional.ofNullable(entity);
     }
 
     public void delete(String counter) {
         mapper.delete(new CounterEntity(counter, 0));
-    }
-
-    private static Counter map(Map<String, AttributeValue> item) {
-        return new Counter(
-                item.get("counter").getS(),
-                Integer.parseInt(item.get("value").getN()));
     }
 
     @PostConstruct
@@ -90,9 +78,5 @@ public class CounterRepository {
 
         @DynamoDBAttribute(attributeName="value")
         private Integer value;
-
-        Counter map() {
-            return new Counter(counter, value);
-        }
     }
 }

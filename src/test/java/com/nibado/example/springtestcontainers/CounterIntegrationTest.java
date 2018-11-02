@@ -29,7 +29,7 @@ public class CounterIntegrationTest extends AbstractIntegrationTest {
     @Before
     public void clear() {
         //Clear all items from the table before every test
-        repository.findAll().forEach(c -> repository.delete(c.getName()));
+        repository.findAll().forEach(c -> repository.delete(c.getCounter()));
     }
 
     @Test
