@@ -18,7 +18,9 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 public class AbstractIntegrationTest {
     private static final int DYNAMO_PORT = 8000;
     @ClassRule
-    public static GenericContainer dynamoDb = new GenericContainer("amazon/dynamodb-local:1.11.119").withExposedPorts(DYNAMO_PORT);
+    public static GenericContainer dynamoDb =
+        new GenericContainer("amazon/dynamodb-local:1.11.119")
+            .withExposedPorts(DYNAMO_PORT);
 
     public static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
         @Override
